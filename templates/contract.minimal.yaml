@@ -1,0 +1,59 @@
+# =============================================================================
+# DATA CONTRACT - Versão Mínima (apenas campos obrigatórios)
+# =============================================================================
+# Copie este arquivo para data_contracts/assets/<nome_tabela>.yaml
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CONTRACT INFO
+# -----------------------------------------------------------------------------
+contract:
+  name: nome_do_contrato_v1        # Nome único do contrato
+  version: 1.0.0                   # Versão semântica
+  status: draft                    # draft | active | deprecated
+
+# -----------------------------------------------------------------------------
+# UNITY CATALOG LOCATION
+# -----------------------------------------------------------------------------
+catalog: nome_catalogo             # Nome do catalog
+schema: nome_schema                # Nome do schema
+
+# -----------------------------------------------------------------------------
+# OWNERSHIP - Governança e Responsáveis
+# -----------------------------------------------------------------------------
+ownership:
+  data_owner: Nome Sobrenome       # Responsável pelo dado
+  bds: Nome Sobrenome              # Business Data Steward
+  tds: Nome Sobrenome              # Technical Data Steward
+  purview_collection: Collection   # Collection no Microsoft Purview
+  portfolio: Corporativo           # Balcao | Corporativo | Financiamento | Listado | ...
+  cadeia_valor: Derivativos        # B3_Linha | Captacao_e_Credito | Derivativos | ...
+  descricao_negocio: |
+    Descrição do contexto de negócio desta tabela.
+
+# -----------------------------------------------------------------------------
+# TABLE - Metadados da Tabela
+# -----------------------------------------------------------------------------
+table:
+  name: nome_tabela                # Nome da tabela
+  description: |
+    Descrição da tabela.
+  refresh_frequency: daily         # hourly | daily | weekly | monthly
+  retention_days: 90               # Dias de retenção
+
+  # Tags obrigatórias
+  tags:
+    camada: Bronze                 # Config_Admin | Bronze | Silver | Gold
+
+  # Colunas
+  columns:
+    - name: id
+      type: string
+      description: Identificador único
+      anonymization: none          # none | hashed | masked | encrypted
+
+    - name: created_at
+      type: timestamp
+      description: Data de criação
+      anonymization: none
+

@@ -1,0 +1,55 @@
+contract:
+  name: seller_payments_v1
+  version: 1.1.0
+  status: active
+
+catalog: b3_tests
+schema: canais_digitais
+
+ownership:
+  data_owner: Data Owner
+  bds: BDS
+  tds: TDS
+  purview_collection: Purview Collection
+  portfolio: Corporativo
+  cadeia_valor: Derivativos
+  descricao_negocio: Views built on top of the seller tables.
+
+table:
+  name: table_name_1
+  description: Provides core payment metrics
+  refresh_frequency: daily
+  retention_days: 30
+
+  tags:
+    camada: Bronze
+    classificacao: Dado_Produto
+
+  columns:
+    - name: txn_ref_dt
+      type: date
+      description: The date of the transaction reference
+      anonymization: masked
+      nullable: false
+      tags:
+        privacidade: PII_Hidden
+
+    - name: pmt_txn_id
+      type: string
+      description: Unique identifier for the payment transaction
+      anonymization: hashed
+      nullable: false
+
+    - name: customer_email
+      type: string
+      description: Email address of the customer
+      anonymization: encrypted
+      nullable: true
+      tags:
+        privacidade: PII_Encrypted
+
+source:
+  type: database
+  name: source_system_name
+  database: source_system_table_name
+

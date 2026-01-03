@@ -1,0 +1,3 @@
+# Data Contracts Library (includes all dependencies)
+databricks-contracts @ git+https://github.com/heri-macedo/databricks_data_contracts.git@refactor_patterns
+databricks-bundles==0.281.0

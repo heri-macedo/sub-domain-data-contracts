@@ -1,0 +1,40 @@
+# Databricks Asset Bundle for Data Contracts
+# See https://docs.databricks.com/dev-tools/bundles/index.html
+bundle:
+  name: data_contracts
+  uuid: 53581432-6c55-4ba2-a65f-72344a91553a
+
+# Python support for dynamic job generation
+# Reference: https://docs.databricks.com/aws/en/dev-tools/bundles/python/
+# Uses Python from active shell (pyenv) - no venv_path needed for local dev
+python:
+  resources:
+    - 'resources:load_resources'
+
+# Arquivos sincronizados para o workspace
+sync:
+  include:
+    - data_contracts/**
+    - resources/**
+    - scripts/**
+    - requirements.txt
+
+# Variáveis do bundle (podem ser sobrescritas via CLI ou env)
+variables:
+  sp_client_id:
+    description: "Service Principal Client ID for run_as"
+    default: ""
+
+targets:
+  dev:
+    mode: development
+    default: true
+    run_as:
+      service_principal_name: ${var.sp_client_id}
+
+  prod:
+    mode: production
+    workspace:
+      root_path: /Workspace/.bundle/${bundle.name}/${bundle.target}
+    run_as:
+      service_principal_name: ${var.sp_client_id}

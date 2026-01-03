@@ -1,0 +1,116 @@
+# =============================================================================
+# DATA CONTRACT - Versão Completa (todos os campos)
+# =============================================================================
+# Copie este arquivo para data_contracts/assets/<nome_tabela>.yaml
+# Campos marcados com (optional) podem ser removidos
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CONTRACT INFO
+# -----------------------------------------------------------------------------
+contract:
+  name: seller_payments_v1         # Nome único do contrato
+  version: 1.0.0                   # Versão semântica
+  status: active                   # draft | active | deprecated
+
+# -----------------------------------------------------------------------------
+# UNITY CATALOG LOCATION
+# -----------------------------------------------------------------------------
+catalog: b3_dados                  # Nome do catalog
+schema: canais_digitais            # Nome do schema
+
+# -----------------------------------------------------------------------------
+# OWNERSHIP - Governança e Responsáveis
+# -----------------------------------------------------------------------------
+ownership:
+  data_owner: João Silva           # Responsável pelo dado
+  bds: Maria Santos                # Business Data Steward
+  tds: Carlos Oliveira             # Technical Data Steward
+  purview_collection: Derivativos  # Collection no Microsoft Purview
+  portfolio: Corporativo           # Balcao | Corporativo | Financiamento | Listado | Pessoa_Fisica | Renda_Fixa | Seguros | Pessoas_B3 | Data_Product | Dados
+  cadeia_valor: Derivativos        # B3_Linha | Captacao_e_Credito | Derivativos | Pos_Negociacao | Recebiveis_e_Financiadores | ESG | Imobiliario | Operacoes | Veiculos | Equities | Clearing | Commodities | Depositaria | Emissores | Emprestimos | Juros_e_Moedas | Leiloes | Negociacao | Onboarding | Riscos | Tarifacao
+  descricao_negocio: |
+    Dados de pagamentos de vendedores processados
+    pelo sistema de liquidação financeira.
+
+# -----------------------------------------------------------------------------
+# TABLE - Metadados da Tabela
+# -----------------------------------------------------------------------------
+table:
+  name: seller_payments            # Nome da tabela
+  description: |
+    Tabela contendo pagamentos de vendedores,
+    agregados por dia de referência.
+  refresh_frequency: daily         # hourly | daily | weekly | monthly
+  retention_days: 90               # 30 | 60 | 90 | 180 | 365
+
+  # ---------------------------------------------------------------------------
+  # TAGS - Unity Catalog Tags
+  # ---------------------------------------------------------------------------
+  tags:
+    # Tag obrigatória
+    camada: Silver                 # Config_Admin | Bronze | Silver | Gold
+
+    # Tags opcionais
+    classificacao: Dado_Produto    # (optional) Dado_Estrategico | Dado_Produto | Dado_Regulatorio
+    data_exchange: Data_Exchange   # (optional) Data_Exchange (se disponível no Data Exchange)
+
+  # ---------------------------------------------------------------------------
+  # COLUMNS - Colunas da Tabela
+  # ---------------------------------------------------------------------------
+  columns:
+    # Coluna simples sem PII
+    - name: txn_ref_dt
+      type: date
+      description: Data de referência da transação
+      anonymization: none          # none | hashed | masked | encrypted
+      nullable: false              # (optional) default: true
+
+    # Coluna com chave primária
+    - name: payment_id
+      type: string
+      description: Identificador único do pagamento
+      anonymization: none
+      nullable: false
+
+    # Coluna com PII - email criptografado
+    - name: customer_email
+      type: string
+      description: Email do cliente para contato
+      anonymization: encrypted     # Criptografia reversível
+      nullable: true
+      tags:                        # (optional)
+        privacidade: PII_Encrypted # PII_Hidden | PII_Encrypted
+
+    # Coluna com PII - CPF com hash
+    - name: cpf
+      type: string
+      description: CPF do cliente
+      anonymization: hashed        # Hash irreversível (SHA-256)
+      nullable: false
+      tags:
+        privacidade: PII_Hidden
+
+    # Coluna numérica
+    - name: amount
+      type: decimal(18,2)
+      description: Valor do pagamento em BRL
+      anonymization: none
+      nullable: false
+
+    # Coluna com tipo complexo
+    - name: metadata
+      type: map<string,string>
+      description: Metadados adicionais do pagamento
+      anonymization: none
+      nullable: true
+
+# -----------------------------------------------------------------------------
+# SOURCE - Origem dos Dados (toda seção é opcional)
+# -----------------------------------------------------------------------------
+source:                            # (optional)
+  purview_fqn: mssql://server.database.schema.table  # Full Qualified Name no Purview
+  type: database                   # database | api | file | kafka | s3
+  name: SAP_Financeiro             # Nome da origem
+  database: SAPDB                  # Nome do database (se tipo database)
+

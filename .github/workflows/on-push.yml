@@ -1,0 +1,99 @@
+name: Push Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'data_contracts/**'
+      - 'resources/**'
+      - 'databricks.yaml'
+      - 'requirements*.txt'
+
+jobs:
+  validate:
+    name: Validate Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate contracts
+        run: databricks-contracts validate all
+
+  deploy-dev:
+    needs: validate
+    if: github.ref == 'refs/heads/develop'
+    name: Deploy to Dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Set credentials
+        run: |
+          echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_DEV }}" >> $GITHUB_ENV
+          echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
+          echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_DEV }}" >> $GITHUB_ENV
+          echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
+
+      - name: Deploy bundle
+        run: databricks bundle deploy -t dev
+
+      - name: Trigger modified contracts
+        run: databricks-contracts trigger modified --env dev
+
+  deploy-prod:
+    needs: validate
+    if: github.ref == 'refs/heads/main'
+    name: Deploy to Prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Set credentials
+        run: |
+          echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_PROD }}" >> $GITHUB_ENV
+          echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
+          echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_PROD }}" >> $GITHUB_ENV
+          echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
+
+      - name: Deploy bundle
+        run: databricks bundle deploy -t prod
+
+      - name: Trigger modified contracts
+        run: databricks-contracts trigger modified --env prod
+
