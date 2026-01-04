@@ -4,17 +4,27 @@
 # Arquivo de configuração do repositório de contratos.
 # Coloque na raiz do repositório do seu time.
 #
-# A CLI valida automaticamente que todos os contratos:
-#   - Usem o catalog definido aqui
-#   - Usem o schema definido aqui
+# Composição de nomes:
+#   - catalog = domain.name + environments.{env}.catalog_suffix
+#   - schema  = domain.sub_domain
+#
+# Exemplo:
+#   dev:  b3_tests.canais_digitais.table_name
+#   prod: b3_tests_prod.canais_digitais.table_name
 # =============================================================================
 
 # Identificação do domínio (obrigatório)
 domain:
-  name: "canais_digitais"           # Nome do domínio/time
+  name: "b3_tests"                   # Catalog base (Unity Catalog)
+  sub_domain: "canais_digitais"     # Schema (Unity Catalog)
   description: "Canais Digitais"    # Descrição para documentação
-  catalog: "b3_tests_prod"                # Catálogo Unity Catalog (domínio)
-  schema: "canais_digitais"         # Schema Unity Catalog (subdomínio)
+
+# Configurações por ambiente
+environments:
+  dev:
+    catalog_suffix: ""              # dev: catalog = "b3_tests"
+  prod:
+    catalog_suffix: "_prod"         # prod: catalog = "b3_tests_prod"
 
 # Ownership padrão (opcional - pode ser sobrescrito por contrato)
 ownership:
@@ -44,9 +54,3 @@ validation:
       - Corporativo
       - Financiamento
       - Listado
-
-# Paths (opcional - defaults)
-paths:
-  contracts: "data_contracts/assets"
-  templates: "data_contracts/templates"
-

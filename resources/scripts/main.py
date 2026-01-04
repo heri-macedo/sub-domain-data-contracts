@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 """
-Wrapper script to run databricks-contracts CLI from Databricks job.
+Entry point for Databricks jobs to apply data contracts.
 
-This script is executed by Databricks jobs to apply data contracts.
+This script is executed by Databricks jobs created via DAB.
 It wraps the CLI entry point from the installed databricks-contracts library.
 
 Usage (from Databricks job):
-    python scripts/apply_contract.py apply contract <name> --env <env>
+    python resources/scripts/main.py apply contract <name> --env <env>
 """
 
 import sys
