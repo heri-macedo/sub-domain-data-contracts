@@ -27,7 +27,7 @@ variables:
 
 sync:
   include:
-    - contracts/**
+    - data_contracts/**
     - datacontract.config.yaml
   exclude:
     - "**/__pycache__/**"
@@ -45,6 +45,9 @@ resources:
       name: "Apply All Contracts - ${bundle.target}"
       description: "Apply all data contracts to Unity Catalog"
       
+      environments:
+        - environment_key: serverless
+      
       tasks:
         - task_key: apply_all
           python_wheel_task:
@@ -53,16 +56,7 @@ resources:
             parameters: ["apply", "all", "--env", "${bundle.target}"]
           libraries:
             - whl: ${var.contracts_lib}
-          new_cluster:
-            spark_version: "14.3.x-scala2.12"
-            num_workers: 0
-            node_type_id: "Standard_DS3_v2"
-            spark_conf:
-              spark.databricks.cluster.profile: "singleNode"
-              spark.master: "local[*]"
-            custom_tags:
-              ResourceClass: "SingleNode"
-              team: "my_team"
+          environment_key: serverless
       
       tags:
         managed_by: "databricks-contracts"
@@ -74,6 +68,9 @@ resources:
     apply_single_contract:
       name: "Apply Contract - ${bundle.target}"
       description: "Apply a single data contract (pass contract_name as parameter)"
+      
+      environments:
+        - environment_key: serverless
       
       parameters:
         - name: contract_name
@@ -87,13 +84,7 @@ resources:
             parameters: ["apply", "contract", "{{job.parameters.contract_name}}", "--env", "${bundle.target}"]
           libraries:
             - whl: ${var.contracts_lib}
-          new_cluster:
-            spark_version: "14.3.x-scala2.12"
-            num_workers: 0
-            node_type_id: "Standard_DS3_v2"
-            spark_conf:
-              spark.databricks.cluster.profile: "singleNode"
-              spark.master: "local[*]"
+          environment_key: serverless
       
       tags:
         managed_by: "databricks-contracts"
@@ -109,8 +100,6 @@ targets:
   dev:
     mode: development
     default: true
-    workspace:
-      root_path: /Workspace/.bundle/${bundle.name}/dev
     variables:
       # DEV: Use latest from develop branch (auto-updated)
       contracts_lib: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
