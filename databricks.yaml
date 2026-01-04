@@ -1,40 +1,130 @@
-# Databricks Asset Bundle for Data Contracts
-# See https://docs.databricks.com/dev-tools/bundles/index.html
+# Example Databricks Asset Bundle for Client Teams
+# Copy this file to your repository and customize
+#
+# Reference: https://docs.databricks.com/dev-tools/bundles/index.html
+
 bundle:
-  name: data_contracts
-  uuid: 53581432-6c55-4ba2-a65f-72344a91553a
+  name: my_team_contracts
 
-# Python support for dynamic job generation
-# Reference: https://docs.databricks.com/aws/en/dev-tools/bundles/python/
-# Uses Python from active shell (pyenv) - no venv_path needed for local dev
-python:
-  resources:
-    - 'resources:load_resources'
+# =============================================================================
+# Variables
+# =============================================================================
 
-# Arquivos sincronizados para o workspace
-sync:
-  include:
-    - data_contracts/**
-    - resources/**
-    - scripts/**
-    - requirements.txt
-
-# Variáveis do bundle (podem ser sobrescritas via CLI ou env)
 variables:
+  # Path to databricks-contracts library in Unity Catalog Volume
+  contracts_lib:
+    description: "Path to databricks-contracts wheel in UC Volume"
+    default: "/Volumes/shared/lib/wheels/dev/databricks_contracts-dev-py3-none-any.whl"
+
+  # Service Principal for run_as (optional)
   sp_client_id:
     description: "Service Principal Client ID for run_as"
     default: ""
 
+# =============================================================================
+# Sync - Files to sync to workspace
+# =============================================================================
+
+sync:
+  include:
+    - contracts/**
+    - datacontract.config.yaml
+  exclude:
+    - "**/__pycache__/**"
+
+# =============================================================================
+# Resources - Jobs
+# =============================================================================
+
+resources:
+  jobs:
+    # -------------------------------------------------------------------------
+    # Apply all contracts
+    # -------------------------------------------------------------------------
+    apply_all_contracts:
+      name: "Apply All Contracts - ${bundle.target}"
+      description: "Apply all data contracts to Unity Catalog"
+      
+      tasks:
+        - task_key: apply_all
+          python_wheel_task:
+            package_name: databricks_contracts
+            entry_point: cli.main:app
+            parameters: ["apply", "all", "--env", "${bundle.target}"]
+          libraries:
+            - whl: ${var.contracts_lib}
+          new_cluster:
+            spark_version: "14.3.x-scala2.12"
+            num_workers: 0
+            node_type_id: "Standard_DS3_v2"
+            spark_conf:
+              spark.databricks.cluster.profile: "singleNode"
+              spark.master: "local[*]"
+            custom_tags:
+              ResourceClass: "SingleNode"
+              team: "my_team"
+      
+      tags:
+        managed_by: "databricks-contracts"
+        team: "my_team"
+
+    # -------------------------------------------------------------------------
+    # Apply single contract (parameterized)
+    # -------------------------------------------------------------------------
+    apply_single_contract:
+      name: "Apply Contract - ${bundle.target}"
+      description: "Apply a single data contract (pass contract_name as parameter)"
+      
+      parameters:
+        - name: contract_name
+          default: ""
+      
+      tasks:
+        - task_key: apply_contract
+          python_wheel_task:
+            package_name: databricks_contracts
+            entry_point: cli.main:app
+            parameters: ["apply", "contract", "{{job.parameters.contract_name}}", "--env", "${bundle.target}"]
+          libraries:
+            - whl: ${var.contracts_lib}
+          new_cluster:
+            spark_version: "14.3.x-scala2.12"
+            num_workers: 0
+            node_type_id: "Standard_DS3_v2"
+            spark_conf:
+              spark.databricks.cluster.profile: "singleNode"
+              spark.master: "local[*]"
+      
+      tags:
+        managed_by: "databricks-contracts"
+
+# =============================================================================
+# Targets (environments)
+# =============================================================================
+
 targets:
+  # ---------------------------------------------------------------------------
+  # Development
+  # ---------------------------------------------------------------------------
   dev:
     mode: development
     default: true
-    run_as:
-      service_principal_name: ${var.sp_client_id}
+    workspace:
+      root_path: /Workspace/.bundle/${bundle.name}/dev
+    variables:
+      # DEV: Use latest from develop branch (auto-updated)
+      contracts_lib: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
 
+  # ---------------------------------------------------------------------------
+  # Production
+  # ---------------------------------------------------------------------------
   prod:
     mode: production
     workspace:
-      root_path: /Workspace/.bundle/${bundle.name}/${bundle.target}
+      root_path: /Workspace/.bundle/${bundle.name}/prod
+    variables:
+      # PROD: Use specific release version (update manually when upgrading)
+      contracts_lib: "/Volumes/shared/lib/wheels/databricks_contracts-1.0.0-py3-none-any.whl"
     run_as:
       service_principal_name: ${var.sp_client_id}
+
