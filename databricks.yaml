@@ -1,10 +1,17 @@
-# Example Databricks Asset Bundle for Client Teams
-# Copy this file to your repository and customize
-#
+# Databricks Asset Bundle for Data Contracts
 # Reference: https://docs.databricks.com/dev-tools/bundles/index.html
 
 bundle:
   name: my_team_contracts
+
+# =============================================================================
+# Python Resources - Dynamic job generation based on contracts
+# =============================================================================
+
+experimental:
+  python:
+    resources:
+      - resources:load_resources
 
 # =============================================================================
 # Variables
@@ -12,9 +19,9 @@ bundle:
 
 variables:
   # Path to databricks-contracts library in Unity Catalog Volume
-  contracts_lib:
+  CONTRACTS_WHEEL_PATH:
     description: "Path to databricks-contracts wheel in UC Volume"
-    default: "/Volumes/shared/lib/wheels/dev/databricks_contracts-dev-py3-none-any.whl"
+    default: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
 
   # Service Principal for run_as (optional)
   sp_client_id:
@@ -33,63 +40,6 @@ sync:
     - "**/__pycache__/**"
 
 # =============================================================================
-# Resources - Jobs
-# =============================================================================
-
-resources:
-  jobs:
-    # -------------------------------------------------------------------------
-    # Apply all contracts
-    # -------------------------------------------------------------------------
-    apply_all_contracts:
-      name: "Apply All Contracts - ${bundle.target}"
-      description: "Apply all data contracts to Unity Catalog"
-      
-      environments:
-        - environment_key: serverless
-      
-      tasks:
-        - task_key: apply_all
-          python_wheel_task:
-            package_name: databricks_contracts
-            entry_point: cli.main:app
-            parameters: ["apply", "all", "--env", "${bundle.target}"]
-          libraries:
-            - whl: ${var.contracts_lib}
-          environment_key: serverless
-      
-      tags:
-        managed_by: "databricks-contracts"
-        team: "my_team"
-
-    # -------------------------------------------------------------------------
-    # Apply single contract (parameterized)
-    # -------------------------------------------------------------------------
-    apply_single_contract:
-      name: "Apply Contract - ${bundle.target}"
-      description: "Apply a single data contract (pass contract_name as parameter)"
-      
-      environments:
-        - environment_key: serverless
-      
-      parameters:
-        - name: contract_name
-          default: ""
-      
-      tasks:
-        - task_key: apply_contract
-          python_wheel_task:
-            package_name: databricks_contracts
-            entry_point: cli.main:app
-            parameters: ["apply", "contract", "{{job.parameters.contract_name}}", "--env", "${bundle.target}"]
-          libraries:
-            - whl: ${var.contracts_lib}
-          environment_key: serverless
-      
-      tags:
-        managed_by: "databricks-contracts"
-
-# =============================================================================
 # Targets (environments)
 # =============================================================================
 
@@ -101,8 +51,7 @@ targets:
     mode: development
     default: true
     variables:
-      # DEV: Use latest from develop branch (auto-updated)
-      contracts_lib: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
+      CONTRACTS_WHEEL_PATH: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
 
   # ---------------------------------------------------------------------------
   # Production
@@ -112,8 +61,6 @@ targets:
     workspace:
       root_path: /Workspace/.bundle/${bundle.name}/prod
     variables:
-      # PROD: Use specific release version (update manually when upgrading)
-      contracts_lib: "/Volumes/shared/lib/wheels/databricks_contracts-1.0.0-py3-none-any.whl"
+      CONTRACTS_WHEEL_PATH: "/Volumes/shared/lib/wheels/databricks_contracts-1.0.0-py3-none-any.whl"
     run_as:
       service_principal_name: ${var.sp_client_id}
-
