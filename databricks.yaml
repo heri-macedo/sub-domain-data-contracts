@@ -35,6 +35,7 @@ variables:
 sync:
   include:
     - data_contracts/**
+    - resources/scripts/**
     - datacontract.config.yaml
   exclude:
     - "**/__pycache__/**"

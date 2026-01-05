@@ -18,6 +18,9 @@ def load_resources(bundle: Bundle) -> Resources:
 
     Creates Databricks jobs dynamically based on contract files.
 
+    The contracts path is resolved automatically.
+    The wheel path is resolved from ${var.CONTRACTS_WHEEL_PATH}.
+
     Args:
         bundle: Bundle context with variables and target info.
 
