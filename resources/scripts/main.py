@@ -9,7 +9,14 @@ Usage (from Databricks job):
     python resources/scripts/main.py apply contract <name> --env <env>
 """
 
+import sys
+
 from databricks_contracts.cli.main import app
 
 if __name__ == "__main__":
-    app()
+    try:
+        app()
+    except SystemExit as e:
+        # Exit code 0 = success, don't raise
+        if e.code != 0:
+            sys.exit(e.code)
