@@ -9,7 +9,7 @@ Reference: https://docs.databricks.com/aws/en/dev-tools/bundles/python/
 
 from databricks.bundles.core import Bundle, Resources
 
-from databricks_contracts.bundles import ContractJobGenerator
+from databricks_contracts.adapters.databricks import ContractJobGenerator
 
 
 def load_resources(bundle: Bundle) -> Resources:

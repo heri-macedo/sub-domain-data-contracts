@@ -66,10 +66,13 @@ trigger:
 	databricks-contracts trigger modified --env $(ENVIRONMENT)
 
 trigger-all:
-	databricks-contracts trigger all --env $(ENVIRONMENT)
+	databricks-contracts trigger all
+
+trigger-all-dry:
+	databricks-contracts trigger all --dry-run
 
 trigger-dry:
-	databricks-contracts trigger modified --env $(ENVIRONMENT) --dry-run
+	databricks-contracts trigger modified --dry-run
 
 # =============================================================================
 # Help

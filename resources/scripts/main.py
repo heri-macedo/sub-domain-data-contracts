@@ -11,12 +11,13 @@ Usage (from Databricks job):
 
 import sys
 
-from databricks_contracts.cli.main import app
+from databricks_contracts.commands.main import app
 
 if __name__ == "__main__":
     try:
         app()
     except SystemExit as e:
-        # Exit code 0 = success, don't raise
+        # Typer/Click raises SystemExit(0) on success
+        # Only re-raise if it's an actual error (non-zero exit code)
         if e.code != 0:
             sys.exit(e.code)
