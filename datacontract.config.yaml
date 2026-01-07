@@ -1,56 +1,35 @@
 # =============================================================================
 # DATA CONTRACT CONFIG
 # =============================================================================
-# Arquivo de configuração do repositório de contratos.
-# Coloque na raiz do repositório do seu time.
+# Configuration file for the contracts repository.
+# Place this at the root of your team's repository.
 #
-# Composição de nomes:
+# Name composition:
 #   - catalog = domain.name + environments.{env}.catalog_suffix
 #   - schema  = domain.sub_domain
 #
-# Exemplo:
-#   dev:  b3_tests.canais_digitais.table_name
-#   prod: b3_tests_prod.canais_digitais.table_name
+# Example:
+#   dev:  test_catalog.test_schema.table_name
+#   prod: test_catalog_prod.test_schema.table_name
 # =============================================================================
 
-# Identificação do domínio (obrigatório)
+# Domain identification (required)
 domain:
-  name: "b3_tests"                   # Catalog base (Unity Catalog)
-  sub_domain: "canais_digitais"     # Schema (Unity Catalog)
-  description: "Canais Digitais"    # Descrição para documentação
+  name: "test_catalog"               # Catalog base (Unity Catalog)
+  sub_domain: "test_schema"          # Schema (Unity Catalog)
+  description: "Test Domain"         # Description for documentation
 
-# Configurações por ambiente
+# Environment-specific configurations
 environments:
   dev:
-    catalog_suffix: ""              # dev: catalog = "b3_tests"
+    catalog_suffix: ""               # dev: catalog = "test_catalog"
   prod:
-    catalog_suffix: "_prod"         # prod: catalog = "b3_tests_prod"
+    catalog_suffix: "_prod"          # prod: catalog = "test_catalog_prod"
 
-# Ownership padrão (opcional - pode ser sobrescrito por contrato)
+# Default ownership (optional - can be overridden per contract)
 ownership:
-  data_owner: "Time Canais Digitais"
-  bds: "João Silva"
-  tds: "Maria Santos"
-  purview_collection: "Canais Digitais Collection"
+  data_owner: "Test Team"
+  bds: "BDS User"
+  tds: "TDS User"
+  purview_collection: "Test Collection"
 
-# Validações extras (opcional)
-validation:
-  # Força que todos os contratos usem o catalog/schema acima
-  enforce_catalog: true
-  enforce_schema: true
-  
-  # Valores permitidos para tags (opcional)
-  allowed_values:
-    camada:
-      - Config_Admin
-      - Bronze
-      - Silver
-      - Gold
-    classificacao:
-      - Dado_Estrategico
-      - Dado_Produto
-      - Dado_Regulatorio
-    portfolio:
-      - Corporativo
-      - Financiamento
-      - Listado
