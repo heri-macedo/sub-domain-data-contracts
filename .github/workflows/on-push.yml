@@ -133,7 +133,7 @@ jobs:
       - name: Trigger modified contracts
         run: |
           echo "🔄 Triggering modified contracts..."
-          databricks-contracts trigger modified --env dev
+          databricks-contracts trigger modified
 
   # ===========================================================================
   # Deploy to Prod (only on main branch)
@@ -181,4 +181,4 @@ jobs:
       - name: Trigger modified contracts
         run: |
           echo "🔄 Triggering modified contracts..."
-          databricks-contracts trigger modified --env prod
+          databricks-contracts trigger modified
