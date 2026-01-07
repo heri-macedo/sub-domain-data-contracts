@@ -63,7 +63,7 @@ deploy:
 # =============================================================================
 
 trigger:
-	databricks-contracts trigger modified --env $(ENVIRONMENT)
+	databricks-contracts trigger modified
 
 trigger-all:
 	databricks-contracts trigger all
