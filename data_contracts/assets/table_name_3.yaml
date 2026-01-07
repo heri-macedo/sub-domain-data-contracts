@@ -57,7 +57,7 @@ table:
       type: decimal(18,2)
       description: Current market value of the position
       anonymization: masked
-      nullable: false
+      nullable: true
 
 source:
   type: database
