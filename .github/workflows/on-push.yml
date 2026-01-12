@@ -3,13 +3,14 @@ name: Push Pipeline
 on:
   push:
     branches:
-      - main
+      - master
       - develop
     paths:
       - 'data_contracts/**'
       - 'resources/**'
       - 'databricks.yaml'
       - 'requirements*.txt'
+      - '.github/workflows/**'
 
 jobs:
   validate:
