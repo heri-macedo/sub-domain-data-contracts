@@ -3,8 +3,8 @@ contract:
   version: 1.1.0
   status: active
 
-catalog: b3_tests
-schema: canais_digitais
+catalog: test_catalog
+schema: test_schema
 
 ownership:
   data_owner: Data Owner
