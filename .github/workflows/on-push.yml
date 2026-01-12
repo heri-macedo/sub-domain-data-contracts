@@ -13,7 +13,10 @@ on:
       - '.github/workflows/**'
 
 jobs:
-  validate:
+  # ===========================================================================
+  # Validate Contracts (YAML validation - no Databricks needed)
+  # ===========================================================================
+  validate-contracts:
     name: Validate Contracts
     runs-on: ubuntu-latest
     steps:
@@ -22,22 +25,78 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Configure Git for private repos
         run: git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+          pip install -r requirements.txt
 
       - name: Validate contracts
         run: databricks-contracts validate all
 
+  # ===========================================================================
+  # Validate Bundle (requires Databricks credentials)
+  # ===========================================================================
+  validate-bundle:
+    name: Validate Bundle
+    runs-on: ubuntu-latest
+    needs: [validate-contracts]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Install dependencies
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+          pip install -r requirements.txt
+
+      - name: Setup credentials (dev)
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_DEV }}" >> $GITHUB_ENV
+          echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
+          echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_DEV }}" >> $GITHUB_ENV
+          echo "BUNDLE_TARGET=dev" >> $GITHUB_ENV
+
+      - name: Setup credentials (prod)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_PROD }}" >> $GITHUB_ENV
+          echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
+          echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_PROD }}" >> $GITHUB_ENV
+          echo "BUNDLE_TARGET=prod" >> $GITHUB_ENV
+
+      - name: Validate bundle
+        run: |
+          echo "🔍 Validating bundle for target: ${{ env.BUNDLE_TARGET }}"
+          databricks bundle validate -t ${{ env.BUNDLE_TARGET }}
+
+  # ===========================================================================
+  # Deploy to Dev (only on develop branch)
+  # ===========================================================================
   deploy-dev:
-    needs: validate
-    if: github.ref == 'refs/heads/develop'
     name: Deploy to Dev
     runs-on: ubuntu-latest
+    needs: [validate-bundle]
+    if: github.ref == 'refs/heads/develop'
+    environment: dev
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,7 +105,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
@@ -55,9 +114,13 @@ jobs:
         run: git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+          pip install -r requirements.txt
 
-      - name: Set credentials
+      - name: Setup credentials
         run: |
           echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_DEV }}" >> $GITHUB_ENV
           echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
@@ -65,16 +128,28 @@ jobs:
           echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
 
       - name: Deploy bundle
-        run: databricks bundle deploy -t dev
+        run: |
+          echo "🚀 Deploying bundle to dev..."
+          databricks bundle deploy -t dev
+          echo "✅ Bundle deployed!"
 
       - name: Trigger modified contracts
-        run: databricks-contracts trigger modified --env dev
+        run: |
+          echo "🔄 Triggering modified contracts..."
+          databricks-contracts trigger modified
 
+  # ===========================================================================
+  # Deploy to Prod (only on main branch)
+  # ===========================================================================
   deploy-prod:
     needs: validate
     if: github.ref == 'refs/heads/master'
     name: Deploy to Prod
     runs-on: ubuntu-latest
+    needs: [validate-bundle]
+    if: github.ref == 'refs/heads/main'
+    environment: prod
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -83,7 +158,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
@@ -92,9 +167,13 @@ jobs:
         run: git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+          pip install -r requirements.txt
 
-      - name: Set credentials
+      - name: Setup credentials
         run: |
           echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_PROD }}" >> $GITHUB_ENV
           echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
@@ -102,8 +181,12 @@ jobs:
           echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
 
       - name: Deploy bundle
-        run: databricks bundle deploy -t prod
+        run: |
+          echo "🚀 Deploying bundle to prod..."
+          databricks bundle deploy -t prod
+          echo "✅ Bundle deployed!"
 
       - name: Trigger modified contracts
-        run: databricks-contracts trigger modified --env prod
-
+        run: |
+          echo "🔄 Triggering modified contracts..."
+          databricks-contracts trigger modified

@@ -1,91 +1,61 @@
-# Data Contracts - [Team Name]
+# Examples
 
-Repository for data contracts of [Team Name] domain.
+This folder contains example files for reference and testing.
 
-## Setup
+## Contents
 
-### 1. Install dependencies
+```
+examples/
+├── contracts/                  # Sample contract files
+│   ├── table_name_1.yaml
+│   ├── table_name_2.yaml
+│   └── table_name_3.yaml
+├── templates/                  # Contract templates
+│   ├── contract.minimal.yaml   # Minimum required fields
+│   └── contract.full.yaml      # All fields including optional
+├── resources/                  # DAB Python resources
+│   ├── __init__.py             # load_resources() entry point
+│   └── scripts/
+│       └── main.py             # Job runtime entry point
+├── databricks.yaml             # Bundle configuration example
+└── datacontract.config.yaml    # Domain configuration (REQUIRED)
+```
+
+## datacontract.config.yaml
+
+This file is **required** in the repository root. It defines:
+
+- **domain.name**: Catalog base name (e.g., `b3_tests`)
+- **domain.sub_domain**: Schema name (e.g., `canais_digitais`)
+- **environments.{env}.catalog_suffix**: Suffix per environment
+
+Example catalog resolution:
+- `--env dev` → `b3_tests.canais_digitais.table_name`
+- `--env prod` → `b3_tests_prod.canais_digitais.table_name`
+
+## Testing Locally
+
+To test the CLI with these examples, run from **inside this folder**:
 
 ```bash
-# Create virtual environment
-pyenv virtualenv 3.12.7 data-contracts-[team]
-pyenv activate data-contracts-[team]
+cd examples
 
-# Install dependencies
-pip install -r requirements.txt
+# Dry-run for dev environment
+CONTRACTS_PATH=contracts python -m databricks_contracts apply all --dry-run --env dev
+
+# Dry-run for prod environment (adds _prod suffix)
+CONTRACTS_PATH=contracts python -m databricks_contracts apply all --dry-run --env prod
 ```
 
-### 2. Configure environment
+## Using as Reference
 
-```bash
-cp env.example .env
-# Edit .env with your Databricks credentials
-```
+Copy files from this folder to set up a new team repository:
 
-### 3. Update datacontract.config.yaml
+1. Copy `datacontract.config.yaml` and customize for your domain (**required**)
+2. Copy `contracts/` and add your table contracts
+3. Copy `templates/` for contract templates
+4. Copy `resources/` for DAB Python support
+5. Copy `databricks.yaml` as bundle config
 
-Edit `datacontract.config.yaml` with your domain settings:
-- `domain.catalog`: Your Unity Catalog name
-- `domain.schema`: Your schema name
-- `ownership`: Default ownership for contracts
-
-## Usage
-
-### Validate contracts
-
-```bash
-databricks-contracts validate all
-```
-
-### Preview DDL
-
-```bash
-databricks-contracts apply ddl my_table
-```
-
-### Deploy bundle
-
-```bash
-# Validate
-databricks bundle validate -t dev
-
-# Deploy
-databricks bundle deploy -t dev
-```
-
-## Creating a new contract
-
-1. Copy template:
-   ```bash
-   cp templates/contract.minimal.yaml data_contracts/assets/my_new_table.yaml
-   ```
-
-2. Edit the contract with your table definition
-
-3. Validate:
-   ```bash
-   databricks-contracts validate contract my_new_table
-   ```
-
-4. Commit and push to trigger CI/CD
-
-## CI/CD
-
-| Event | Action |
-|-------|--------|
-| Pull Request | Lint + Validate contracts |
-| Merge to develop | Deploy to dev + Trigger modified |
-| Merge to main | Deploy to prod + Trigger modified |
-
-## Project Structure
-
-```
-├── data_contracts/
-│   └── assets/           # Your contracts (.yaml)
-├── resources/            # DAB Python resources
-├── templates/            # Contract templates
-├── datacontract.config.yaml  # Domain configuration
-├── databricks.yaml       # Bundle configuration
-└── requirements.txt
-```
+Or use `client-template/` which has everything pre-configured.
 

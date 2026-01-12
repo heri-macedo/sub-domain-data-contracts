@@ -43,9 +43,9 @@ validate-contracts:
 	@echo "🔍 Validating all contracts..."
 	databricks-contracts validate all
 
-dry-run:
-	@echo "📋 Generating DDL preview..."
-	databricks-contracts apply all --dry-run
+dry-run-contract:
+	@echo "📋 Generating DDL preview for contract $(CONTRACT)..."
+	databricks-contracts apply contract $(CONTRACT) --dry-run
 
 # =============================================================================
 # Bundle
@@ -63,13 +63,16 @@ deploy:
 # =============================================================================
 
 trigger:
-	databricks-contracts trigger modified --env $(ENVIRONMENT)
+	databricks-contracts trigger modified
 
 trigger-all:
-	databricks-contracts trigger all --env $(ENVIRONMENT)
+	databricks-contracts trigger all
+
+trigger-all-dry:
+	databricks-contracts trigger all --dry-run
 
 trigger-dry:
-	databricks-contracts trigger modified --env $(ENVIRONMENT) --dry-run
+	databricks-contracts trigger modified --dry-run
 
 # =============================================================================
 # Help
@@ -88,7 +91,8 @@ help:
 	@echo ""
 	@echo "  Contracts:"
 	@echo "    make validate-contracts  - Validate all contracts"
-	@echo "    make dry-run             - Preview DDL"
+	@echo "    make dry-run             - Preview DDL for all contracts"
+	@echo "    make dry-run-contract CONTRACT=name - Preview DDL for a specific contract"
 	@echo ""
 	@echo "  Bundle:"
 	@echo "    make validate-bundle     - Validate bundle"

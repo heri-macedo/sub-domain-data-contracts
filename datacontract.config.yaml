@@ -1,52 +1,35 @@
 # =============================================================================
 # DATA CONTRACT CONFIG
 # =============================================================================
-# Arquivo de configuração do repositório de contratos.
-# Coloque na raiz do repositório do seu time.
+# Configuration file for the contracts repository.
+# Place this at the root of your team's repository.
 #
-# A CLI valida automaticamente que todos os contratos:
-#   - Usem o catalog definido aqui
-#   - Usem o schema definido aqui
+# Name composition:
+#   - catalog = domain.name + environments.{env}.catalog_suffix
+#   - schema  = domain.sub_domain
+#
+# Example:
+#   dev:  test_catalog.test_schema.table_name
+#   prod: test_catalog_prod.test_schema.table_name
 # =============================================================================
 
-# Identificação do domínio (obrigatório)
+# Domain identification (required)
 domain:
-  name: "canais_digitais"           # Nome do domínio/time
-  description: "Canais Digitais"    # Descrição para documentação
-  catalog: "b3_tests_prod"                # Catálogo Unity Catalog (domínio)
-  schema: "canais_digitais"         # Schema Unity Catalog (subdomínio)
+  name: "test_catalog"               # Catalog base (Unity Catalog)
+  sub_domain: "test_schema"          # Schema (Unity Catalog)
+  description: "Test Domain"         # Description for documentation
 
-# Ownership padrão (opcional - pode ser sobrescrito por contrato)
+# Environment-specific configurations
+environments:
+  dev:
+    catalog_suffix: ""               # dev: catalog = "test_catalog"
+  prod:
+    catalog_suffix: "_prod"          # prod: catalog = "test_catalog_prod"
+
+# Default ownership (optional - can be overridden per contract)
 ownership:
-  data_owner: "Time Canais Digitais"
-  bds: "João Silva"
-  tds: "Maria Santos"
-  purview_collection: "Canais Digitais Collection"
-
-# Validações extras (opcional)
-validation:
-  # Força que todos os contratos usem o catalog/schema acima
-  enforce_catalog: true
-  enforce_schema: true
-  
-  # Valores permitidos para tags (opcional)
-  allowed_values:
-    camada:
-      - Config_Admin
-      - Bronze
-      - Silver
-      - Gold
-    classificacao:
-      - Dado_Estrategico
-      - Dado_Produto
-      - Dado_Regulatorio
-    portfolio:
-      - Corporativo
-      - Financiamento
-      - Listado
-
-# Paths (opcional - defaults)
-paths:
-  contracts: "data_contracts/assets"
-  templates: "data_contracts/templates"
+  data_owner: "Test Team"
+  bds: "BDS User"
+  tds: "TDS User"
+  purview_collection: "Test Collection"
 

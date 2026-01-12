@@ -1,40 +1,67 @@
 # Databricks Asset Bundle for Data Contracts
-# See https://docs.databricks.com/dev-tools/bundles/index.html
+# Reference: https://docs.databricks.com/dev-tools/bundles/index.html
+
 bundle:
-  name: data_contracts
-  uuid: 53581432-6c55-4ba2-a65f-72344a91553a
+  name: my_team_contracts
 
-# Python support for dynamic job generation
-# Reference: https://docs.databricks.com/aws/en/dev-tools/bundles/python/
-# Uses Python from active shell (pyenv) - no venv_path needed for local dev
-python:
-  resources:
-    - 'resources:load_resources'
+# =============================================================================
+# Python Resources - Dynamic job generation based on contracts
+# =============================================================================
 
-# Arquivos sincronizados para o workspace
-sync:
-  include:
-    - data_contracts/**
-    - resources/**
-    - scripts/**
-    - requirements.txt
+experimental:
+  python:
+    resources:
+      - resources:load_resources
 
-# Variáveis do bundle (podem ser sobrescritas via CLI ou env)
+# =============================================================================
+# Variables
+# =============================================================================
+
 variables:
+  # Path to databricks-contracts library in Unity Catalog Volume
+  CONTRACTS_WHEEL_PATH:
+    description: "Path to databricks-contracts wheel in UC Volume"
+    default: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
+
+  # Service Principal for run_as (optional)
   sp_client_id:
     description: "Service Principal Client ID for run_as"
     default: ""
 
+# =============================================================================
+# Sync - Files to sync to workspace
+# =============================================================================
+
+sync:
+  include:
+    - data_contracts/**
+    - resources/scripts/**
+    - datacontract.config.yaml
+  exclude:
+    - "**/__pycache__/**"
+
+# =============================================================================
+# Targets (environments)
+# =============================================================================
+
 targets:
+  # ---------------------------------------------------------------------------
+  # Development
+  # ---------------------------------------------------------------------------
   dev:
     mode: development
     default: true
-    run_as:
-      service_principal_name: ${var.sp_client_id}
+    variables:
+      CONTRACTS_WHEEL_PATH: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
 
+  # ---------------------------------------------------------------------------
+  # Production
+  # ---------------------------------------------------------------------------
   prod:
     mode: production
     workspace:
-      root_path: /Workspace/.bundle/${bundle.name}/${bundle.target}
+      root_path: /Workspace/.bundle/${bundle.name}/prod
+    variables:
+      CONTRACTS_WHEEL_PATH: "/Volumes/shared/lib/wheels/databricks_contracts-1.0.0-py3-none-any.whl"
     run_as:
       service_principal_name: ${var.sp_client_id}
