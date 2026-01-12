@@ -3,7 +3,7 @@ name: Push Pipeline
 on:
   push:
     branches:
-      - main
+      - master
       - develop
     paths:
       - 'data_contracts/**'
