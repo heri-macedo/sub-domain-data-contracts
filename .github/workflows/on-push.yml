@@ -69,7 +69,7 @@ jobs:
 
   deploy-prod:
     needs: validate
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     name: Deploy to Prod
     runs-on: ubuntu-latest
     steps:
