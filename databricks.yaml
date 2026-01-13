@@ -59,6 +59,8 @@ targets:
   # ---------------------------------------------------------------------------
   prod:
     mode: production
+    presets:
+      jobs_max_concurrent_runs: 1
     workspace:
       root_path: /Workspace/.bundle/${bundle.name}/prod
     variables:
