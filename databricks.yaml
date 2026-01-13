@@ -62,6 +62,4 @@ targets:
     workspace:
       root_path: /Workspace/.bundle/${bundle.name}/prod
     variables:
-      CONTRACTS_WHEEL_PATH: "/Volumes/shared/lib/wheels/databricks_contracts-1.0.0-py3-none-any.whl"
-    run_as:
-      service_principal_name: ${var.sp_client_id}
+      CONTRACTS_WHEEL_PATH: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
