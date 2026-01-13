@@ -75,7 +75,7 @@ jobs:
           echo "BUNDLE_TARGET=dev" >> $GITHUB_ENV
 
       - name: Setup credentials (prod)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/master'
         run: |
           echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_PROD }}" >> $GITHUB_ENV
           echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
