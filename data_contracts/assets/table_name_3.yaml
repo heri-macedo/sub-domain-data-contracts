@@ -7,7 +7,7 @@ catalog: test_catalog
 schema: test_schema
 
 ownership:
-  data_owner: Data Owner
+  data_owner: Data Owner2
   bds: BDS
   tds: TDS
   purview_collection: TestCollection2
