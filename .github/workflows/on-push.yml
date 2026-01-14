@@ -119,21 +119,35 @@ jobs:
 
       - name: Setup credentials
         run: |
+          echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
           echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_DEV }}" >> $GITHUB_ENV
           echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
           echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_DEV }}" >> $GITHUB_ENV
           echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
+          # Purview
+          echo "PURVIEW_ACCOUNT_NAME=${{ secrets.PURVIEW_ACCOUNT_NAME_DEV }}" >> $GITHUB_ENV
+          echo "PURVIEW_CLIENT_ID=${{ secrets.PURVIEW_CLIENT_ID_DEV }}" >> $GITHUB_ENV
+          echo "PURVIEW_CLIENT_SECRET=${{ secrets.PURVIEW_CLIENT_SECRET_DEV }}" >> $GITHUB_ENV
+          echo "PURVIEW_TENANT_ID=${{ secrets.PURVIEW_TENANT_ID_DEV }}" >> $GITHUB_ENV
 
       - name: Deploy bundle
         run: |
-          echo "🚀 Deploying bundle to dev..."
-          databricks bundle deploy -t dev
+          echo "🚀 Deploying bundle to ${{ env.DEPLOY_ENV }}..."
+          databricks bundle deploy -t ${{ env.DEPLOY_ENV }}
           echo "✅ Bundle deployed!"
 
       - name: Trigger modified contracts
         run: |
           echo "🔄 Triggering modified contracts..."
           databricks-contracts trigger modified
+
+      - name: Publish contracts to Purview
+        run: |
+          echo "📤 Publishing modified contracts to Purview..."
+          databricks-contracts publish purview-modified \
+            --base-ref ${{ github.event.before }} \
+            --env ${{ env.DEPLOY_ENV }}
+          echo "✅ Purview publish complete!"
 
   # ===========================================================================
   # Deploy to Prod (only on main branch)
@@ -167,18 +181,33 @@ jobs:
 
       - name: Setup credentials
         run: |
+          echo "DEPLOY_ENV=prod" >> $GITHUB_ENV
           echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_PROD }}" >> $GITHUB_ENV
           echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
           echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_PROD }}" >> $GITHUB_ENV
           echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
+          # Purview
+          echo "PURVIEW_ACCOUNT_NAME=${{ secrets.PURVIEW_ACCOUNT_NAME_PROD }}" >> $GITHUB_ENV
+          echo "PURVIEW_CLIENT_ID=${{ secrets.PURVIEW_CLIENT_ID_PROD }}" >> $GITHUB_ENV
+          echo "PURVIEW_CLIENT_SECRET=${{ secrets.PURVIEW_CLIENT_SECRET_PROD }}" >> $GITHUB_ENV
+          echo "PURVIEW_TENANT_ID=${{ secrets.PURVIEW_TENANT_ID_PROD }}" >> $GITHUB_ENV
 
       - name: Deploy bundle
         run: |
-          echo "🚀 Deploying bundle to prod..."
-          databricks bundle deploy -t prod
+          echo "🚀 Deploying bundle to ${{ env.DEPLOY_ENV }}..."
+          databricks bundle deploy -t ${{ env.DEPLOY_ENV }}
           echo "✅ Bundle deployed!"
 
       - name: Trigger modified contracts
         run: |
           echo "🔄 Triggering modified contracts..."
           databricks-contracts trigger modified
+      
+
+      - name: Publish contracts to Purview
+        run: |
+          echo "📤 Publishing modified contracts to Purview..."
+          databricks-contracts publish purview-modified \
+            --base-ref ${{ github.event.before }} \
+            --env ${{ env.DEPLOY_ENV }}
+          echo "✅ Purview publish complete!"
