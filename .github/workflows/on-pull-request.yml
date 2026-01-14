@@ -3,7 +3,6 @@ name: PR Pipeline
 on:
   pull_request:
 
-
 jobs:
   validate:
     name: Validate Contracts
@@ -17,11 +16,12 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+          pip install -r requirements.txt
 
       - name: Validate contracts
         run: databricks-contracts validate all
-
-      - name: Preview DDL
-        run: databricks-contracts apply all --dry-run
 
