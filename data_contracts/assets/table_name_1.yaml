@@ -16,7 +16,7 @@ ownership:
   business_description: Test business description for table 1.
 
 table:
-  name: table_name_1
+  name: table_name_2
   description: Provides core test metrics
   refresh_frequency: daily
   retention_days: 30
