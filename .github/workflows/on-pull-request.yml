@@ -30,6 +30,3 @@ jobs:
       - name: Validate contracts
         run: databricks-contracts validate all
 
-      - name: Preview DDL
-        run: databricks-contracts apply all --dry-run
-
