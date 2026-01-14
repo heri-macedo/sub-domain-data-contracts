@@ -1,4 +1,4 @@
 # Data Contracts Library (includes all dependencies)
-databricks-contracts @ git+https://github.com/heri-macedo/databricks_data_contracts.git@develop
+databricks-contracts @ git+https://github.com/heri-macedo/databricks_data_contracts.git@main
 databricks-bundles==0.281.0
  
