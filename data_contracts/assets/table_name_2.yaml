@@ -10,7 +10,7 @@ ownership:
   data_owner: Data Owner
   bds: BDS
   tds: TDS
-  purview_collection: TestCollection
+  purview_collection: TestCollection2
   business_domain: Domain_3
   value_chain: ValueChain_B
   business_description: Test business description for table 2.
