@@ -1,16 +1,37 @@
 name: Push Pipeline
 
 on:
-  push:
-    branches:
-      - master
-      - develop
-    paths:
-      - 'data_contracts/**'
-      - 'resources/**'
-      - 'databricks.yaml'
-      - 'requirements*.txt'
-      - '.github/workflows/**'
+  workflow_call:
+    secrets:
+
+      DATABRICKS_HOST_DEV:
+        required: true
+      DATABRICKS_SP_CLIENT_ID_DEV:
+        required: true
+      DATABRICKS_SP_SECRET_DEV:
+        required: true
+      DATABRICKS_HOST_PROD:
+        required: true
+      DATABRICKS_SP_CLIENT_ID_PROD:
+        required: true
+      DATABRICKS_SP_SECRET_PROD:
+        required: true
+      PURVIEW_ACCOUNT_NAME_DEV:
+        required: true
+      PURVIEW_CLIENT_ID_DEV:
+        required: true
+      PURVIEW_CLIENT_SECRET_DEV:
+        required: true
+      PURVIEW_TENANT_ID_DEV:
+        required: true
+      PURVIEW_ACCOUNT_NAME_PROD:
+        required: true
+      PURVIEW_CLIENT_ID_PROD:
+        required: true
+      PURVIEW_CLIENT_SECRET_PROD:
+        required: true
+      PURVIEW_TENANT_ID_PROD:
+        required: true
 
 env:
   PYTHON_VERSION: '3.11'
