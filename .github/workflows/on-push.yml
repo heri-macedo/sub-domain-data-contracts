@@ -90,18 +90,22 @@ jobs:
       - name: Setup credentials (dev)
         if: github.ref == 'refs/heads/develop'
         run: |
-          echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_DEV }}" >> $GITHUB_ENV
-          echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
-          echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_DEV }}" >> $GITHUB_ENV
-          echo "BUNDLE_TARGET=dev" >> $GITHUB_ENV
+          {
+            echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_DEV }}"
+            echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}"
+            echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_DEV }}"
+            echo "BUNDLE_TARGET=dev"
+          } >> "$GITHUB_ENV"
 
       - name: Setup credentials (prod)
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         run: |
-          echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_PROD }}" >> $GITHUB_ENV
-          echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
-          echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_PROD }}" >> $GITHUB_ENV
-          echo "BUNDLE_TARGET=prod" >> $GITHUB_ENV
+          {
+            echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_PROD }}"
+            echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}"
+            echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_PROD }}"
+            echo "BUNDLE_TARGET=prod"
+          } >> "$GITHUB_ENV"
 
       - name: Validate bundle
         run: |
@@ -140,16 +144,18 @@ jobs:
 
       - name: Setup credentials
         run: |
-          echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
-          echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_DEV }}" >> $GITHUB_ENV
-          echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
-          echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_DEV }}" >> $GITHUB_ENV
-          echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}" >> $GITHUB_ENV
-          # Purview
-          echo "PURVIEW_ACCOUNT_NAME=${{ secrets.PURVIEW_ACCOUNT_NAME_DEV }}" >> $GITHUB_ENV
-          echo "PURVIEW_CLIENT_ID=${{ secrets.PURVIEW_CLIENT_ID_DEV }}" >> $GITHUB_ENV
-          echo "PURVIEW_CLIENT_SECRET=${{ secrets.PURVIEW_CLIENT_SECRET_DEV }}" >> $GITHUB_ENV
-          echo "PURVIEW_TENANT_ID=${{ secrets.PURVIEW_TENANT_ID_DEV }}" >> $GITHUB_ENV
+          {
+            echo "DEPLOY_ENV=dev"
+            echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_DEV }}"
+            echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}"
+            echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_DEV }}"
+            echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_DEV }}"
+            # Purview
+            echo "PURVIEW_ACCOUNT_NAME=${{ secrets.PURVIEW_ACCOUNT_NAME_DEV }}"
+            echo "PURVIEW_CLIENT_ID=${{ secrets.PURVIEW_CLIENT_ID_DEV }}"
+            echo "PURVIEW_CLIENT_SECRET=${{ secrets.PURVIEW_CLIENT_SECRET_DEV }}"
+            echo "PURVIEW_TENANT_ID=${{ secrets.PURVIEW_TENANT_ID_DEV }}"
+          } >> "$GITHUB_ENV"
 
       - name: Deploy bundle
         run: |
@@ -177,7 +183,7 @@ jobs:
     name: Deploy to Prod
     runs-on: ubuntu-latest
     needs: [validate-bundle]
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     environment: prod
 
     steps:
@@ -202,16 +208,18 @@ jobs:
 
       - name: Setup credentials
         run: |
-          echo "DEPLOY_ENV=prod" >> $GITHUB_ENV
-          echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_PROD }}" >> $GITHUB_ENV
-          echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
-          echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_PROD }}" >> $GITHUB_ENV
-          echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}" >> $GITHUB_ENV
-          # Purview
-          echo "PURVIEW_ACCOUNT_NAME=${{ secrets.PURVIEW_ACCOUNT_NAME_PROD }}" >> $GITHUB_ENV
-          echo "PURVIEW_CLIENT_ID=${{ secrets.PURVIEW_CLIENT_ID_PROD }}" >> $GITHUB_ENV
-          echo "PURVIEW_CLIENT_SECRET=${{ secrets.PURVIEW_CLIENT_SECRET_PROD }}" >> $GITHUB_ENV
-          echo "PURVIEW_TENANT_ID=${{ secrets.PURVIEW_TENANT_ID_PROD }}" >> $GITHUB_ENV
+          {
+            echo "DEPLOY_ENV=prod"
+            echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST_PROD }}"
+            echo "DATABRICKS_CLIENT_ID=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}"
+            echo "DATABRICKS_CLIENT_SECRET=${{ secrets.DATABRICKS_SP_SECRET_PROD }}"
+            echo "BUNDLE_VAR_sp_client_id=${{ secrets.DATABRICKS_SP_CLIENT_ID_PROD }}"
+            # Purview
+            echo "PURVIEW_ACCOUNT_NAME=${{ secrets.PURVIEW_ACCOUNT_NAME_PROD }}"
+            echo "PURVIEW_CLIENT_ID=${{ secrets.PURVIEW_CLIENT_ID_PROD }}"
+            echo "PURVIEW_CLIENT_SECRET=${{ secrets.PURVIEW_CLIENT_SECRET_PROD }}"
+            echo "PURVIEW_TENANT_ID=${{ secrets.PURVIEW_TENANT_ID_PROD }}"
+          } >> "$GITHUB_ENV"
 
       - name: Deploy bundle
         run: |
