@@ -1,4 +1,4 @@
-.PHONY: setup install lint format validate-contracts validate-contract dry-run-contract apply-contract deploy trigger trigger-contract publish-purview publish-purview-contract help
+.PHONY: setup install lint format validate-contracts validate-contract dry-run-contract apply-contract deploy trigger trigger-all trigger-contracts trigger-dry trigger-all-dry publish-purview publish-purview-modified publish-purview-all help
 
 # Load .env file if exists
 ifneq (,$(wildcard .env))
@@ -77,24 +77,50 @@ trigger:
 trigger-all:
 	databricks-contracts trigger all
 
-trigger-contract:
-	@echo "🔄 Triggering job for contract $(CONTRACT)..."
-	databricks-contracts trigger contract $(CONTRACT)
+trigger-contracts:
+	@echo "🔄 Triggering jobs for contracts: $(CONTRACTS)..."
+	databricks-contracts trigger contracts $(CONTRACTS)
+
+trigger-dry:
+	databricks-contracts trigger modified --dry-run
 
 trigger-all-dry:
 	databricks-contracts trigger all --dry-run
 
-trigger-dry:
-	databricks-contracts trigger modified --dry-run
+trigger-contracts-dry:
+	@echo "🔍 Dry-run: Triggering jobs for contracts: $(CONTRACTS)..."
+	databricks-contracts trigger contracts $(CONTRACTS) --dry-run
 
 # =============================================================================
 # Purview
 # =============================================================================
 
 publish-purview:
-	@echo "📤 Publishing contract $(CONTRACT) to Purview ($(ENVIRONMENT))..."
-	databricks-contracts publish purview $(CONTRACT) --env $(ENVIRONMENT)
-	@echo "✅ Contract $(CONTRACT) published to Purview!"
+	@echo "📤 Publishing contracts to Purview ($(ENVIRONMENT))..."
+	databricks-contracts publish purview $(CONTRACTS) --env $(ENVIRONMENT)
+	@echo "✅ Contracts published to Purview!"
+
+publish-purview-modified:
+	@echo "📤 Publishing modified contracts to Purview ($(ENVIRONMENT))..."
+	databricks-contracts publish purview-modified --env $(ENVIRONMENT)
+	@echo "✅ Modified contracts published to Purview!"
+
+publish-purview-all:
+	@echo "📤 Publishing all contracts to Purview ($(ENVIRONMENT))..."
+	databricks-contracts publish purview-all --env $(ENVIRONMENT)
+	@echo "✅ All contracts published to Purview!"
+
+publish-purview-dry:
+	@echo "🔍 Dry-run: Publishing contracts to Purview ($(ENVIRONMENT))..."
+	databricks-contracts publish purview $(CONTRACTS) --env $(ENVIRONMENT) --dry-run
+
+publish-purview-modified-dry:
+	@echo "🔍 Dry-run: Publishing modified contracts to Purview ($(ENVIRONMENT))..."
+	databricks-contracts publish purview-modified --env $(ENVIRONMENT) --dry-run
+
+publish-purview-all-dry:
+	@echo "🔍 Dry-run: Publishing all contracts to Purview ($(ENVIRONMENT))..."
+	databricks-contracts publish purview-all --env $(ENVIRONMENT) --dry-run
 
 # =============================================================================
 # Help
@@ -112,23 +138,30 @@ help:
 	@echo "    make format             - Auto-format code"
 	@echo ""
 	@echo "  Contracts:"
-	@echo "    make validate-contracts - Validate all contracts"
-	@echo "    make validate-contract CONTRACT=name - Validate a specific contract"
-	@echo "    make dry-run-contract CONTRACT=name  - Preview DDL for a specific contract"
-	@echo "    make apply-contract CONTRACT=name    - Apply a specific contract"
+	@echo "    make validate-contracts                - Validate all contracts"
+	@echo "    make validate-contract CONTRACT=name   - Validate a specific contract"
+	@echo "    make dry-run-contract CONTRACT=name    - Preview DDL for a contract"
+	@echo "    make apply-contract CONTRACT=name      - Apply a contract"
 	@echo ""
 	@echo "  Bundle:"
 	@echo "    make validate-bundle    - Validate bundle"
 	@echo "    make deploy             - Deploy bundle"
 	@echo ""
 	@echo "  Trigger:"
-	@echo "    make trigger            - Trigger modified contracts"
-	@echo "    make trigger-all        - Trigger all contracts"
-	@echo "    make trigger-contract CONTRACT=name - Trigger job for a specific contract"
-	@echo "    make trigger-dry        - Dry run modified"
+	@echo "    make trigger                           - Trigger modified contracts"
+	@echo "    make trigger-all                       - Trigger all contracts"
+	@echo "    make trigger-contracts CONTRACTS='a b' - Trigger specific contracts"
+	@echo "    make trigger-dry                       - Dry-run modified"
+	@echo "    make trigger-all-dry                   - Dry-run all"
+	@echo "    make trigger-contracts-dry CONTRACTS='a b' - Dry-run specific"
 	@echo ""
 	@echo "  Purview:"
-	@echo "    make publish-purview CONTRACT=name - Publish a contract to Purview (uses ENVIRONMENT)"
+	@echo "    make publish-purview CONTRACTS='a b'   - Publish specific contracts"
+	@echo "    make publish-purview-modified          - Publish modified contracts"
+	@echo "    make publish-purview-all               - Publish all contracts"
+	@echo "    make publish-purview-dry CONTRACTS='a' - Dry-run publish specific"
+	@echo "    make publish-purview-modified-dry      - Dry-run publish modified"
+	@echo "    make publish-purview-all-dry           - Dry-run publish all"
 	@echo ""
 	@echo "  Override environment: make apply-contract CONTRACT=table_name_1 ENVIRONMENT=prod"
 
