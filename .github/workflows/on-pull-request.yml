@@ -2,11 +2,6 @@ name: PR Pipeline
 
 on:
   pull_request:
-    paths:
-      - 'data_contracts/**'
-      - 'resources/**'
-      - 'databricks.yaml'
-      - 'requirements*.txt'
 
 jobs:
   validate:
