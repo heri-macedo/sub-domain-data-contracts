@@ -40,6 +40,22 @@ table:
       anonymization: hashed
       nullable: false
 
+    - name: customer_email
+      type: string
+      description: Email address of the customer
+      anonymization: encrypted
+      nullable: true
+      tags:
+        privacy: PII_B
+
+    - name: customer_phone
+      type: string
+      description: Phone address of the customer
+      anonymization: encrypted
+      nullable: true
+      tags:
+        privacy: PII_B
+
 source:
   type: database
   name: test_source_system
