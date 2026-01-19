@@ -11,7 +11,7 @@ ownership:
   bds: BDS
   tds: TDS
   purview_collection: TestCollection
-  business_domain: Domain_11
+  business_domain: Domain_1
   value_chain: ValueChain_A
   business_description: Test business description for table 1.
 
