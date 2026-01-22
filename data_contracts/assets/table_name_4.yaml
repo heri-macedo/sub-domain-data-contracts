@@ -11,8 +11,8 @@ ownership:
   bds: BDS
   tds: TDS
   purview_collection: TestCollection
-  business_domain: Domain_1
-  value_chain: ValueChain_A
+  portfolio: Dados
+  sub_domain: Plataforma_de_Dados
   business_description: Test business description for table 1.
 
 table:
@@ -22,8 +22,8 @@ table:
   retention_days: 30
 
   tags:
-    layer: Layer_1
-    classification: Class_B
+    layer: Silver
+    classification: Dado_Produto
 
   columns:
     - name: txn_ref_dt
@@ -32,7 +32,7 @@ table:
       anonymization: masked
       nullable: false
       tags:
-        privacy: PII_A
+        privacy: PII_HIDDEN
 
     - name: pmt_txn_id
       type: string
@@ -46,7 +46,7 @@ table:
       anonymization: encrypted
       nullable: true
       tags:
-        privacy: PII_B
+        privacy: PII_ENCRYPTED
 
     - name: customer_phone
       type: string
@@ -54,7 +54,7 @@ table:
       anonymization: encrypted
       nullable: true
       tags:
-        privacy: PII_B
+        privacy: PII_ENCRYPTED
 
 source:
   type: database

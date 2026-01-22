@@ -11,8 +11,8 @@ ownership:
   bds: BDS
   tds: TDS
   purview_collection: TestCollection
-  business_domain: Domain_3
-  value_chain: ValueChain_B
+  portfolio: Dados
+  sub_domain: Plataforma_de_Dados
   business_description: Test business description for table 2.
 
 table:
@@ -22,8 +22,8 @@ table:
   retention_days: 90
 
   tags:
-    layer: Layer_2
-    classification: Class_A
+    layer: Silver
+    classification: Dado_Produto
 
   columns:
     - name: order_id
@@ -38,7 +38,7 @@ table:
       anonymization: encrypted
       nullable: false
       tags:
-        privacy: PII_B
+        privacy: PII_ENCRYPTED
 
     - name: order_date
       type: date

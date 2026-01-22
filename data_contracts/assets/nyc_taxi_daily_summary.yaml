@@ -1,0 +1,83 @@
+contract:
+  name: nyc_taxi_daily_summary_v1
+  version: 1.0.0
+  status: active
+
+catalog: financiamentos
+schema: imobiliario
+
+ownership:
+  data_owner: Data Owner
+  bds: BDS
+  tds: TDS
+  purview_collection: TestCollection
+  portfolio: Financiamento
+  domain: financiamentos
+  sub_domain: Imobiliário
+  business_description: Daily summary of NYC taxi trips with aggregated metrics.
+
+table:
+  name: nyc_taxi_daily_summary
+  description: Aggregated daily metrics for NYC taxi trips including fare and distance statistics
+  refresh_frequency: daily
+  retention_days: 365
+
+  tags:
+    layer: Silver
+    classification: Dado_Produto
+
+  columns:
+    - name: pickup_date
+      type: date
+      description: Date when the taxi trip started
+      nullable: false
+
+    - name: pickup_zip
+      type: int
+      description: ZIP code of the pickup location
+      nullable: true
+
+    - name: dropoff_zip
+      type: int
+      description: ZIP code of the dropoff location
+      nullable: true
+
+    - name: trip_count
+      type: bigint
+      description: Total number of trips for the given combination
+      nullable: false
+
+    - name: avg_fare
+      type: double
+      description: Average fare amount for the trips
+      nullable: true
+
+    - name: total_fare
+      type: double
+      description: Sum of all fares for the trips
+      nullable: true
+
+    - name: avg_distance
+      type: double
+      description: Average distance traveled per trip
+      nullable: true
+
+    - name: min_fare
+      type: double
+      description: Minimum fare amount among the trips
+      nullable: true
+
+    - name: max_fare
+      type: double
+      description: Maximum fare amount among the trips
+      nullable: true
+
+    - name: total_distance
+      type: double
+      description: Total distance traveled for all trips
+      nullable: true
+
+source:
+  type: database
+  name: nyc_taxi_source
+  database: financiamentos
