@@ -16,7 +16,7 @@
 # Domain identification (required)
 domain:
   name: "financiamentos"               # Catalog base (Unity Catalog)
-  sub_domain: "imobiliario"          # Schema (Unity Catalog)
+  sub_domain: "imobiliario_dev"          # Schema (Unity Catalog)
   description: "Test Domain"         # Description for documentation
 
 # Environment-specific configurations
