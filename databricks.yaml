@@ -23,11 +23,6 @@ variables:
     description: "Path to databricks-contracts wheel in UC Volume"
     default: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
 
-  # Service Principal for run_as (optional)
-  sp_client_id:
-    description: "Service Principal Client ID for run_as"
-    default: ""
-
   # Service Principal ID para GRANT MODIFY (vem do CI/CD ou target)
   WORKFLOW_SP_ID:
     description: "Service Principal ID para GRANT MODIFY nas tabelas"
