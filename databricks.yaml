@@ -31,6 +31,7 @@ variables:
   # Service Principal para GRANT MODIFY (vem do CI/CD)
   workflow_sp_id:
     description: "Service Principal ID para GRANT MODIFY nas tabelas"
+    default: ""
 
 # =============================================================================
 # Sync - Files to sync to workspace
