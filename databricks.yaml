@@ -28,6 +28,10 @@ variables:
     description: "Service Principal Client ID for run_as"
     default: ""
 
+  # Service Principal para GRANT MODIFY (vem do CI/CD)
+  workflow_sp_id:
+    description: "Service Principal ID para GRANT MODIFY nas tabelas"
+
 # =============================================================================
 # Sync - Files to sync to workspace
 # =============================================================================

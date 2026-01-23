@@ -12,13 +12,12 @@ ownership:
   tds: TDS
   purview_collection: TestCollection
   portfolio: Financiamento
-  domain: financiamentos
   sub_domain: Imobiliário
   business_description: Daily summary of NYC taxi trips with aggregated metrics.
 
 table:
   name: nyc_taxi_daily_summary
-  description: Aggregated daily metrics for NYC taxi trips including fare and distance statistics
+  description: Aggregated daily metrics for NYC taxi trips including fare and distance statistics.
   refresh_frequency: daily
   retention_days: 365
 
