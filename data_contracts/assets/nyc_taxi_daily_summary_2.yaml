@@ -16,7 +16,7 @@ ownership:
   business_description: Daily summary of NYC taxi trips with aggregated metrics.
 
 table:
-  name: nyc_taxi_daily_summary
+  name: nyc_taxi_daily_summary_2
   description: Aggregated daily metrics for NYC taxi trips including fare and distance statistics..
   refresh_frequency: daily
   retention_days: 365
