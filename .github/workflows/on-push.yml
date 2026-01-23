@@ -131,6 +131,8 @@ jobs:
           echo "PURVIEW_TENANT_ID=${{ secrets.PURVIEW_TENANT_ID_DEV }}" >> $GITHUB_ENV
 
       - name: Deploy bundle
+        env:
+          BUNDLE_VAR_workflow_sp_id: ${{ secrets.WORKFLOW_SP_ID }}
         run: |
           echo "🚀 Deploying bundle to ${{ env.DEPLOY_ENV }}..."
           databricks bundle deploy -t ${{ env.DEPLOY_ENV }}
@@ -193,6 +195,8 @@ jobs:
           echo "PURVIEW_TENANT_ID=${{ secrets.PURVIEW_TENANT_ID_PROD }}" >> $GITHUB_ENV
 
       - name: Deploy bundle
+        env:
+          BUNDLE_VAR_workflow_sp_id: ${{ secrets.WORKFLOW_SP_ID }}
         run: |
           echo "🚀 Deploying bundle to ${{ env.DEPLOY_ENV }}..."
           databricks bundle deploy -t ${{ env.DEPLOY_ENV }}
