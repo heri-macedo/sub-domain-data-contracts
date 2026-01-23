@@ -132,7 +132,7 @@ jobs:
 
       - name: Deploy bundle
         env:
-          BUNDLE_VAR_workflow_sp_id: ${{ secrets.WORKFLOW_SP_ID }}
+          BUNDLE_VAR_WORKFLOW_SP_ID: ${{ secrets.WORKFLOW_SP_ID_DEV }}
         run: |
           echo "🚀 Deploying bundle to ${{ env.DEPLOY_ENV }}..."
           databricks bundle deploy -t ${{ env.DEPLOY_ENV }}
@@ -196,7 +196,7 @@ jobs:
 
       - name: Deploy bundle
         env:
-          BUNDLE_VAR_workflow_sp_id: ${{ secrets.WORKFLOW_SP_ID }}
+          BUNDLE_VAR_WORKFLOW_SP_ID: ${{ secrets.WORKFLOW_SP_ID_PROD }}
         run: |
           echo "🚀 Deploying bundle to ${{ env.DEPLOY_ENV }}..."
           databricks bundle deploy -t ${{ env.DEPLOY_ENV }}

@@ -57,7 +57,6 @@ targets:
     mode: development
     default: true
     variables:
-      WORKFLOW_SP_ID: "6eb173d7-a50a-443f-9edd-cddb96f77e62"
       CONTRACTS_WHEEL_PATH: "/Volumes/shared/lib/wheels/databricks_contracts-0.0.0.dev0-py3-none-any.whl"
 
   # ---------------------------------------------------------------------------
@@ -70,5 +69,4 @@ targets:
     workspace:
       root_path: /Workspace/.bundle/${bundle.name}/prod
     variables:
-      WORKFLOW_SP_ID: "WORKFLOW_SP_ID_PROD"
       CONTRACTS_WHEEL_PATH: "/Volumes/shared/lib/wheels/databricks_contracts-1.0.1-py3-none-any.whl"
